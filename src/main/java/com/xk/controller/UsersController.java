@@ -38,6 +38,7 @@ public class UsersController {
                             Model model) {
         System.out.println("你好面试");
         System.out.println("你好面试官");
+        System.out.println("你好面试官 master test");
 
         Users users = usersService.userLogin(userCode, userPwd);
         if (null != users) {

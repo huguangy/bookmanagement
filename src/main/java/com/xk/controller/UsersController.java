@@ -39,6 +39,7 @@ public class UsersController {
         System.out.println("你好面试");
         System.out.println("你好面试官");
         System.out.println("你好面试官 master test");
+        System.out.println("你好面试官 hot-fix test1");
 
         Users users = usersService.userLogin(userCode, userPwd);
         if (null != users) {

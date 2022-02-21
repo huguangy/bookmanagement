@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xk.mapper.OrderbookMapper">
+
+    <resultMap id="orderbook_book" type="com.xk.pojo.Orderbook">
+        <id property="id" column="id"/>
+        <result property="orderID" column="orderID"/>
+        <result property="bookID" column="bookID"/>
+        <result property="quantity" column="quantity"/>
+        <result property="unitPrice" column="unitPrice"/>
+        <association property="books" javaType="com.xk.pojo.Books">
+            <id property="id" column="bookID"/>
+            <result property="title" column="title"/>
+        </association>
+    </resultMap>
+
+    <select id="queryOrderDetails" resultMap="orderbook_book" parameterType="map">
+        SELECT orderbook.*,
+               books.title
+        FROM orderbook
+        JOIN books
+        ON orderbook.bookID=books.id
+        <where>
+            <if test="orderId!=null and orderId!=0">
+                AND orderbook.orderID=#{orderId}
+            </if>
+            <if test="title!=null and title!=''">
+                AND books.title LIKE concat('%',#{title},'%')
+            </if>
+            <if test="bookId!=null and bookId!=0">
+                AND orderbook.bookID=#{bookId}
+            </if>
+            <if test="unitPriceA!=null and unitPriceA!=0 and unitPriceB!=null and unitPriceB!=0">
+                AND orderbook.unitPrice BETWEEN #{unitPriceA} AND #{unitPriceB}
+            </if>
+        </where>
+            LIMIT #{pageNum},#{pageSize}
+    </select>
+
+    <select id="queryOrderDetailsCount" resultType="int" parameterType="map">
+        SELECT count(1)
+        FROM orderbook
+        JOIN books
+        ON orderbook.bookID=books.id
+        <where>
+            <if test="orderId!=null and orderId!=0">
+                AND orderbook.orderID=#{orderId}
+            </if>
+            <if test="title!=null and title!=''">
+                AND books.title LIKE concat('%',#{title},'%')
+            </if>
+            <if test="bookId!=null and bookId!=0">
+                AND orderbook.bookID=#{bookId}
+            </if>
+            <if test="unitPriceA!=null and unitPriceA!=0 and unitPriceB!=null and unitPriceB!=0">
+                AND orderbook.unitPrice BETWEEN #{unitPriceA} AND #{unitPriceB}
+            </if>
+        </where>
+    </select>
+</mapper>

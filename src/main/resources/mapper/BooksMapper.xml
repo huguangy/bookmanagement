@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xk.mapper.BooksMapper">
+
+    <resultMap id="newbooks" type="com.xk.pojo.Books">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="author" column="author"/>
+        <result property="categoryId" column="categoryId"/>
+        <result property="unitPrice" column="unitPrice"/>
+        <result property="clicks" column="clicks"/>
+        <result property="publisherId" column="publisherId"/>
+        <result property="publishDate" column="publishDate"/>
+        <result property="ISBN" column="ISBN"/>
+        <result property="wordsCount" column="wordsCount"/>
+        <result property="contentDescription" column="contentDescription"/>
+        <result property="aurhorDescription" column="aurhorDescription"/>
+        <result property="editorComment" column="editorComment"/>
+        <result property="TOC" column="TOC"/>
+        <result property="cover" column="cover"/>
+        <result property="discountPrice" column="discountPrice"/>
+        <result property="bookstate" column="bookstate"/>
+        <association property="publishers" javaType="com.xk.pojo.Publishers">
+            <id property="id" column="publisherId"/>
+            <result property="name" column="publishersname"/>
+        </association>
+        <association property="categories" javaType="com.xk.pojo.Categories">
+            <id property="id" column="categoryId"/>
+            <result property="name" column="categoriesname"/>
+        </association>
+    </resultMap>
+
+    <select id="queryBookList" resultMap="newbooks" parameterType="map">
+        SELECT books.*,
+                publishers.name publishersname,
+                categories.name categoriesname
+        FROM books
+        JOIN publishers
+        ON books.publisherId=publishers.id
+        JOIN categories
+        on books.categoryId=categories.id
+        <where>
+            <if test="id!=null and id!=0">
+                AND books.id=#{id}
+            </if>
+            <if test="title!=null and title!=''">
+                AND books.title like concat('%',#{title},'%')
+            </if>
+            <if test="author!=null and author!=''">
+                AND books.author like concat('%',#{author},'%')
+            </if>
+            <if test="publishDateA!=null and publishDateA!='' and publishDateB!=null and publishDateB!=''">
+                AND books.publishDate BETWEEN #{publishDateA} AND #{publishDateB}
+            </if>
+            <if test="unitPriceA!=null and unitPriceA!=0 and unitPriceB!=null and unitPriceB!=0">
+                AND books.unitPrice BETWEEN #{unitPriceA} AND #{unitPriceB}
+            </if>
+            <if test="categoryId!=null and categoryId!=0">
+                AND books.categoryId=#{categoryId}
+            </if>
+            <if test="publisherId!=null and publisherId!=0">
+                AND books.publisherId=#{publisherId}
+            </if>
+        </where>
+        LIMIT #{pageNum},#{pageSize}
+    </select>
+
+
+    <select id="queryBookListcount" resultType="int" parameterType="map">
+        SELECT count(1)
+        FROM books
+        JOIN publishers
+        ON books.publisherId=publishers.id
+        JOIN categories
+        on books.categoryId=categories.id
+        <where>
+            <if test="id!=null and id!=0">
+                AND books.id=#{id}
+            </if>
+            <if test="title!=null and title!=''">
+                AND books.title=#{title}
+            </if>
+            <if test="author!=null and author!=''">
+                AND books.author=#{author}
+            </if>
+            <if test="publishDateA!=null and publishDateA!='' and publishDateB!=null and publishDateB!=''">
+                AND books.publishDate BETWEEN #{publishDateA} AND #{publishDateB}
+            </if>
+            <if test="unitPriceA!=null and unitPriceA!=0 and unitPriceB!=null and unitPriceB!=0">
+                AND books.unitPrice BETWEEN #{unitPriceA} AND #{unitPriceB}
+            </if>
+            <if test="categoryId!=null and categoryId!=0">
+                AND books.categoryId=#{categoryId}
+            </if>
+            <if test="publisherId!=null and publisherId!=0">
+                AND books.publisherId=#{publisherId}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryBook_id" resultMap="newbooks" parameterType="int">
+        SELECT books.*,
+        publishers.name,
+        categories.name
+        FROM books
+        JOIN publishers
+        ON books.publisherId=publishers.id
+        JOIN categories
+        on books.categoryId=categories.id
+        <where>
+            <if test="id!=null and id!=0">
+                AND books.id=#{id}
+            </if>
+        </where>
+    </select>
+
+    <update id="modifyBook" parameterType="com.xk.pojo.Books">
+        UPDATE `books`
+        <set>
+            <if test="title!=null and title!=''">
+                `title` = #{title},
+            </if>
+             <if test="author!=null and author!=''">
+                 `author` = #{author},
+            </if>
+             <if test="categoryId!=null and categoryId!=0">
+                 `categoryId` = #{categoryId},
+            </if>
+             <if test="unitPrice!=null and unitPrice!=0">
+                 `unitPrice` = #{unitPrice},
+             </if>
+             <if test="clicks!=null and clicks!=0">
+                 `clicks` = #{clicks},
+             </if>
+             <if test="publisherId!=null and publisherId!=0">
+                 `publisherId` = #{publisherId},
+            </if>
+             <if test="publishDate!=null and publishDate!=''">
+                 `publishDate` = #{publishDate},
+            </if>
+             <if test="ISBN!=null and ISBN!=''">
+                 `ISBN` = #{ISBN},
+            </if>
+             <if test="wordsCount!=null and wordsCount!=0">
+                 `wordsCount` = #{wordsCount},
+            </if>
+             <if test="contentDescription!=null and contentDescription!='' ">
+                 `contentDescription` = #{contentDescription},
+             </if>
+             <if test="aurhorDescription!=null and aurhorDescription!=''">
+                 `aurhorDescription` = #{aurhorDescription},
+             </if>
+             <if test="editorComment!=null and editorComment!=''">
+                 `editorComment` = #{editorComment},
+             </if>
+             <if test="TOC!=null and TOC!=''">
+                 `TOC` = #{TOC},
+            </if>
+             <if test="cover!=null and cover!=''">
+                 `cover` = #{cover},
+            </if>
+             <if test="discountPrice!=null and discountPrice!=0">
+                 `discountPrice` = #{discountPrice},
+            </if>
+             <if test="bookstate!=null and bookstate!=0">
+                 `bookstate` = #{bookstate}
+            </if>
+        </set>
+        WHERE `id` = #{id};
+    </update>
+
+    <insert id="addBook" parameterType="com.xk.pojo.Books">
+        INSERT INTO books
+        (`id`, `title`, `author`, `categoryId`, `unitPrice`, `clicks`, `publisherId`, `publishDate`, `ISBN`, `wordsCount`, `contentDescription`, `aurhorDescription`, `editorComment`, `TOC`, `cover`, `discountPrice`, `bookstate`)
+        value
+        (#{id},#{title},#{author},#{categoryId},#{unitPrice},#{clicks},#{publisherId},#{publishDate},#{ISBN},#{wordsCount},#{contentDescription},#{aurhorDescription},#{editorComment},#{TOC},#{cover},#{discountPrice},#{bookstate})
+    </insert>
+</mapper>

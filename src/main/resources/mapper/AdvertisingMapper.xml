@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xk.mapper.AdvertisingMapper">
+    <select id="queryAdvertising" resultType="com.xk.pojo.Advertising" parameterType="map">
+        SELECT
+        advertising.*,
+        categories.`name` categoriesName
+        FROM
+        advertising
+        LEFT JOIN categories
+        ON advertising.categoriesId=categories.id
+        <where>
+            <if test="classify!=null and classify!=0">
+                and advertising.classify=#{classify}
+            </if>
+            <if test="state!=null and state!=0">
+                and advertising.state=#{state}
+            </if>
+        </where>
+    </select>
+
+    <insert id="addAdvertising" parameterType="com.xk.pojo.Advertising">
+        INSERT INTO `advertising` ( `content`, `picture`, `state`, `createTime`, `categoriesId`, `classify` )
+        VALUES
+            (#{content}, #{picture}, #{state}, NOW(), #{categoriesId}, #{classify} )
+    </insert>
+
+    <delete id="deleteAdvertising" parameterType="int">
+        DELETE FROM advertising WHERE id=#{id}
+    </delete>
+
+    <update id="updateAdvertising" parameterType="com.xk.pojo.Advertising">
+        UPDATE `advertising`
+        <set>
+            <if test="content!=null and content!=''">
+                `content` = #{content},
+            </if>
+            <if test="picture!=null and picture!=''">
+                `picture` = #{picture},
+            </if>
+            <if test="state!=null and state!=0'">
+                `state` = #{state},
+            </if>
+            <if test="categoriesId!=null and categoriesId!=0'">
+                `categoriesId` = #{categoriesId},
+            </if>
+            <if test="classify!=null and classify!=0'">
+                `classify` = #{classify}
+            </if>
+        </set>
+        WHERE
+            `id` = #{id}
+    </update>
+</mapper>

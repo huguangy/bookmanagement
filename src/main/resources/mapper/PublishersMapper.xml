@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xk.mapper.PublishersMapper">
+
+    <select id="queryPublishers" resultType="com.xk.pojo.Publishers" parameterType="map">
+        SELECT *
+        FROM publishers
+        <where>
+            <if test="id!=null and id!=0">
+                and id=#{id}
+            </if>
+            <if test="name!=null and name!=''">
+                and name like concat('%',#{name},'%')
+            </if>
+        </where>
+        <if test="pageNum!=null and pageNum!=-10">
+            LIMIT #{pageNum},#{pageSize}
+        </if>
+    </select>
+
+    <select id="queryPublishers_book" resultType="com.xk.pojo.Publishers">
+        SELECT *
+        FROM publishers
+    </select>
+
+    <select id="queryPublisherscount" resultType="int" parameterType="map">
+        SELECT count(1)
+        FROM publishers
+        <where>
+            <if test="id!=null and id!=0">
+                and id=#{id}
+            </if>
+            <if test="name!=null and name!=''">
+                and name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertPublishers" parameterType="String">
+        insert into publishers(name) value (#{name})
+    </insert>
+
+    <update id="updatePublishers" parameterType="com.xk.pojo.Publishers">
+        UPDATE publishers
+        <set>
+            <if test="name!=null and name!=''">
+                `name` = #{name}
+            </if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
+    
+    <delete id="deletePublishers" parameterType="Integer">
+        DELETE
+        FROM publishers
+        WHERE id=#{id}
+    </delete>
+</mapper>

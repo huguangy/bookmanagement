@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xk.mapper.OrdersMapper">
+    <resultMap id="orders_user" type="com.xk.pojo.Orders">
+        <id property="id" column="id"/>
+        <result property="orderDate" column="orderDate"/>
+        <result property="userId" column="userId"/>
+        <result property="totalPrice" column="totalPrice"/>
+        <result property="state" column="state"/>
+        <association property="users" javaType="com.xk.pojo.Users">
+            <id property="id" column="userId"/>
+            <result property="loginId" column="loginId"/>
+        </association>
+    </resultMap>
+
+    <select id="queryOrder" resultMap="orders_user" parameterType="map">
+        SELECT orders.*,
+               users.loginId
+        FROM orders
+        JOIN users
+        ON orders.userId=users.id
+        <where>
+            <if test="state!=null and state!=0">
+                and orders.state=#{state}
+            </if>
+            <if test="totalPriceA!=null and totalPriceA!=0 and totalPriceB!=null and totalPriceB!=0">
+                AND orders.totalPrice BETWEEN #{totalPriceA} AND #{totalPriceB}
+            </if>
+            <if test="loginId!=null and loginId!=''">
+                AND users.loginId LIKE concat('%',#{loginId},'%')
+            </if>
+            <if test="startTime!=null and startTime!='' and endTime!=null and endTime!=''">
+                AND orders.orderDate BETWEEN #{startTime} AND #{endTime}
+            </if>
+            <if test="orderId!=null and orderId!=0">
+                AND orders.id={#orderId}
+            </if>
+        </where>
+         limit #{pageNum},#{pageSize}
+    </select>
+
+    <select id="queryOrderCount" resultType="int" parameterType="map">
+        SELECT count(1)
+        FROM orders
+        JOIN users
+        ON orders.userId=users.id
+        <where>
+            <if test="state!=null and state!=0">
+                and orders.state=#{state}
+            </if>
+            <if test="totalPriceA!=null and totalPriceA!=0 and totalPriceB!=null and totalPriceB!=0">
+                AND orders.totalPrice BETWEEN #{totalPriceA} AND #{totalPriceB}
+            </if>
+            <if test="loginId!=null and loginId!=''">
+                AND users.loginId LIKE concat('%',#{loginId},'%')
+            </if>
+            <if test="startTime!=null and startTime!='' and endTime!=null and endTime!=''">
+                AND orders.orderDate BETWEEN #{startTime} AND #{endTime}
+            </if>
+            <if test="orderId!=null and orderId!=0">
+                AND orders.id={#orderId}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryOrder_id" parameterType="int" resultMap="orders_user">
+        SELECT orders.*,
+               users.loginId
+        FROM orders
+        JOIN users
+        ON orders.userId=users.id
+        WHERE orders.id=#{id}
+    </select>
+
+    <update id="updateOrder" parameterType="com.xk.pojo.Orders">
+        UPDATE orders
+        <set>
+            state =#{state}
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

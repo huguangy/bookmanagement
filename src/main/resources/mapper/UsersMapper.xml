@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xk.mapper.UsersMapper">
+    <!--登陆验证-->
+    <select id="queryUser_loginId" resultType="com.xk.pojo.Users">
+        SELECT * FROM users WHERE loginId = #{loginId}
+    </select>
+
+    <!--Map映射-->
+    <resultMap id="newUser" type="Users">
+        <id property="id" column="id"/>
+       <result property="name" column="name"/>
+       <result property="address" column="address"/>
+       <result property="phone" column="phone"/>
+       <result property="mail" column="mail"/>
+       <result property="userStateId" column="userStateId"/>
+       <result property="isOnLine" column="isOnLine"/>
+       <result property="loginId" column="loginId"/>
+       <result property="loginPwd" column="loginPwd"/>
+       <result property="userRoleId" column="userRoleId"/>
+       <result property="gender" column="gender"/>
+       <association property="userroles" javaType="com.xk.pojo.Userroles" >
+           <id property="id" column="userRoleId"/>
+           <result property="name" column="rolesName"/>
+       </association>
+        <association property="userstates" javaType="com.xk.pojo.Userstates">
+            <id property="id" column="userStateId"/>
+            <result property="name" column="statesName"/>
+        </association>
+    </resultMap>
+
+    <!--分表查询全部-->
+    <select id="queryAllUser" resultMap="newUser" parameterType="map">
+        SELECT users.*,
+               userroles.`name` rolesName,
+               userstates.`name` statesName
+        FROM users
+        JOIN userroles
+        ON userroles.id=users.userRoleId
+        JOIN userstates
+        ON userstates.id=users.userStateId
+        <where>
+            <if test="userName!=''">
+                AND users.`name`LIKE concat('%',#{userName},'%')
+            </if>
+            <if test="loginId!=''">
+                AND users.`loginId`LIKE concat('%',#{loginId},'%')
+            </if>
+            <if test="rolesId!=0">
+                AND users.userRoleId = #{rolesId}
+            </if>
+            <if test="statesId!=0">
+                AND users.userStateId = #{statesId}
+            </if>
+        </where>
+        LIMIT #{pageNum},#{pageSize}
+    </select>
+
+    <!--查询总数-->
+    <select id="queryAllUserCount" resultType="int" parameterType="map">
+        SELECT count(1)
+        FROM users
+        JOIN userroles
+        ON userroles.id=users.userRoleId
+        JOIN userstates
+        ON userstates.id=users.userStateId
+        <where>
+            <if test="userName!=''">
+                AND users.`name`LIKE concat('%',#{userName},'%')
+            </if>
+            <if test="loginId!=''">
+                AND users.`loginId`LIKE concat('%',#{loginId},'%')
+            </if>
+            <if test="rolesId!=0">
+                AND users.userRoleId = #{rolesId}
+            </if>
+            <if test="statesId!=0">
+                AND users.userStateId = #{statesId}
+            </if>
+        </where>
+    </select>
+
+    <!--根据id查询用户-->
+    <select id="queryUser_id" resultMap="newUser" parameterType="int">
+        SELECT users.*,
+        userroles.`name` rolesName,
+        userstates.`name` statesName
+        FROM users
+        JOIN userroles
+        ON userroles.id=users.userRoleId
+        JOIN userstates
+        ON userstates.id=users.userStateId
+        where users.id = #{userId}
+    </select>
+
+    <update id="updateUser" parameterType="com.xk.pojo.Users" >
+        UPDATE users
+        <set>
+            <if test="name!=null and name!=''">
+            `name` = #{name},
+            </if>
+            <if test="address!=null and address!=''">
+            `address` = #{address},
+            </if>
+            <if test="phone!=null and phone!=''">
+            `phone` = #{phone},
+            </if>
+            <if test="mail!=null and mail!=''">
+            `mail` = #{mail},
+            </if>
+            <if test="userStateId!=null and userStateId!=0">
+            `userStateId` = #{userStateId},
+            </if>
+            <if test="userRoleId!=null and userRoleId!=0">
+            `userRoleId` = #{userRoleId},
+            </if>
+            <if test="loginId!=null and loginId!=''">
+            `loginId` = #{loginId},
+            </if>
+            <if test="loginPwd!=null and loginPwd!=''">
+            `loginPwd` = #{loginPwd},
+            </if>
+            <if test="gender!=null and gender!=0">
+            `gender` = #{gender}
+            </if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
+
+    <insert id="insertUser" parameterType="com.xk.pojo.Users">
+        INSERT INTO users
+            (name, address, phone, mail, userStateId, isOnLine, loginId, loginPwd, userRoleId, gender)
+        VALUES
+            (#{name}, #{address}, #{phone}, #{mail}, 1, 1, #{loginId}, #{loginPwd}, #{userRoleId}, #{gender})
+    </insert>
+
+
+    <!--根据id删除用户-->
+
+
+</mapper>

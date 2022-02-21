@@ -36,6 +36,7 @@ public class UsersController {
                             @RequestParam("userPwd") String userPwd,
                             HttpServletRequest request,
                             Model model) {
+        System.out.println("你好面试");
 
         Users users = usersService.userLogin(userCode, userPwd);
         if (null != users) {

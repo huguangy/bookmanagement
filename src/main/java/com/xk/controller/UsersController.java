@@ -37,6 +37,7 @@ public class UsersController {
                             HttpServletRequest request,
                             Model model) {
         System.out.println("你好面试");
+        System.out.println("你好面试官");
 
         Users users = usersService.userLogin(userCode, userPwd);
         if (null != users) {
